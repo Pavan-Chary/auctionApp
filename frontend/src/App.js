@@ -19,7 +19,7 @@ import {
   Route
 } from "react-router-dom";
 
-const socket = io("http://192.168.1.22:8000");
+const socket = io("/");
 
 function App() {
 
@@ -37,7 +37,7 @@ function App() {
   const getNewUser=(()=>{
     try{
       const getToken=localStorage.getItem('token');
-      fetch(`http://192.168.1.22:8000/api/getUser?token=${getToken}`).then((res)=>res.json()).then((res)=>{
+      fetch(`/api/getUser?token=${getToken}`).then((res)=>res.json()).then((res)=>{
         if(res.code===1){
           setUser(res.user); 
           setRequests(res.people)
@@ -54,7 +54,7 @@ function App() {
 
 
   useEffect(()=>{
-    fetch(`http://192.168.1.22:8000/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
+    fetch(`/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
   },[user])
   
 
@@ -63,7 +63,7 @@ function App() {
   socket.on(`getNewRequests${user.id}`,(payload)=>{
     if(user){
       console.log("I got message")
-      fetch(`http://192.168.1.22:8000/api/getRequestedList?userId=${user.id}`).then((resp)=>resp.json()).then((resp)=>{
+      fetch(`/api/getRequestedList?userId=${user.id}`).then((resp)=>resp.json()).then((resp)=>{
         setRequests(resp.people);
       }).catch()
     }
@@ -74,7 +74,7 @@ useEffect(()=>{
     socket.on(`getNewRequests${user.id}`,(payload)=>{
       if(user){
         console.log("I got message")
-        fetch(`http://192.168.1.22:8000/api/getRequestedList?userId=${user.id}`).then((resp)=>resp.json()).then((resp)=>{
+        fetch(`/api/getRequestedList?userId=${user.id}`).then((resp)=>resp.json()).then((resp)=>{
           setRequests(resp.people);
         }).catch()
       }
@@ -93,12 +93,12 @@ useEffect(()=>{
   socket.on(`addRequest${user.id}`,(payload)=>{console.log("I got");setRequests([...requests,payload])})
   socket.on(`messageTo${user.id}`,(payload)=>{console.log("I got");console.log(payload);showMessage(payload.msg)})
   socket.on(`getNewAuctions${user.id}`,()=>{
-    fetch(`http://192.168.1.22:8000/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
+    fetch(`/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
   })
   }
 
   const getMyAuctions=()=>{
-    fetch(`http://192.168.1.22:8000/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
+    fetch(`/api/getMyAuctions?user=${user?user.id:""}`).then((res)=>res.json()).then((res)=>setAuctionsList(res.auctions)).catch()
   }
 
   //Handling Login
@@ -106,7 +106,7 @@ useEffect(()=>{
   const emailL= useRef();
   const passwordL= useRef();
   const logIt = async(data)=>{
-    return await fetch(("http://192.168.1.22:8000/api/login/"),{
+    return await fetch(("/api/login/"),{
       method:"post",
       headers:{
         'Content-Type':'application/json'
@@ -126,7 +126,7 @@ useEffect(()=>{
       if(result.code==1){
         localStorage.setItem('token',result.token);  
         showMessage("Login Successful");
-        fetch(`http://192.168.1.22:8000/api/getUser?token=${result.token}`).then((res)=>res.json()).then((res)=>{
+        fetch(`/api/getUser?token=${result.token}`).then((res)=>res.json()).then((res)=>{
           if(res.code===1){
             setUser(res.user); 
             setRequests(res.people)
@@ -146,7 +146,7 @@ useEffect(()=>{
   const passwordS= useRef();
   const nameS= useRef();
   const signIt = async(data)=>{
-    return await fetch(("http://192.168.1.22:8000/api/signin/"),{
+    return await fetch(("/api/signin/"),{
       method:"post",
       headers:{
         'Content-Type':'application/json'
@@ -182,7 +182,7 @@ useEffect(()=>{
         setMsg("Give a proper time...");
         return;
       }
-      await fetch('http://192.168.1.22:8000/api/createAuction/',{
+      await fetch('/api/createAuction/',{
         method:"post",
         headers:{
           'Content-Type':'application/json',
@@ -218,7 +218,7 @@ useEffect(()=>{
 
   const handleGetAuctionParticipants=(code)=>{
     console.log("Isent a request with code", code);
-      fetch(`http://192.168.1.22:8000/api/getAuctionParticipants?id=${code}`).then(res=>res.json()).then((res)=>{
+      fetch(`/api/getAuctionParticipants?id=${code}`).then(res=>res.json()).then((res)=>{
         if(res.code===0){
           showMessage(res.msg);
         }else{
@@ -293,7 +293,7 @@ useEffect(()=>{
 
   //
   const handleShowButton=(id)=>{
-    fetch(`http://192.168.1.22:8000/api/getAuctionParticipants?id=${id}`).then(res=>res.json()).then((res)=>{
+    fetch(`/api/getAuctionParticipants?id=${id}`).then(res=>res.json()).then((res)=>{
       if(res.code===0){
         showMessage(res.msg);
       }else{
